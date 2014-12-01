@@ -36,7 +36,9 @@ project pairs pts =
 drawEigenArrows : Point -> [(Point, Float)] -> [Form]
 drawEigenArrows (mx,my) pairs =
   let drawOne ((x,y), l) =
-        let seg = segment (mx,my) (mx+100*x, my+100*y) |> traced (solid red)
+        let len = l/1000
+            seg = segment (mx,my) (mx+len*x, my+len*y)
+                    |> traced (solid red)
             dot = circle 5 |> filled red |> move (mx,my)
         in [seg, dot]
   in pairs |> map adjustQuadrant |> map drawOne |> concat
@@ -64,5 +66,4 @@ getEigenpairs points =
             |> pcaEigenpairs
             |> sortBy snd
             |> reverse
-            |> takeOne
             |> map (\(x,y) -> (vectToPoint x, y))
