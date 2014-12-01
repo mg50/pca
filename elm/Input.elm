@@ -1,12 +1,21 @@
-module Input (points) where
+module Input (actions) where
 import Model (..)
 import Mouse
 import Window
 
-points : Signal [Point]
-points =
-  let point = normalize <~ dimensions' ~ position'
-  in foldp (::) [] (sampleOn Mouse.clicks point)
+actions : Signal Action
+actions = merges [mouseUp, mouseDown, mouseMove]
+
+mouseUp = let down = keepIf not False Mouse.isDown
+          in Mouseup <~ sampleOn down currentPoint
+
+mouseDown = let down = keepIf identity True Mouse.isDown
+            in Mousedown <~ sampleOn down currentPoint
+
+mouseMove = Mousemove <~ currentPoint
+
+currentPoint : Signal Point
+currentPoint = normalize <~ dimensions' ~ position'
 
 dimensions' : Signal (Float, Float)
 dimensions' = lift toFloat2 Window.dimensions

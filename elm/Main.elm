@@ -1,11 +1,13 @@
 module Main where
 import Model (..)
-import Input (points)
+import Input (actions)
 import Display (display)
+import Update (update)
 import Numeric (..)
 import LinearAlgebra (..)
 import Util (..)
 import Array as A
+import Dict as D
 import Mouse
 import Window
 
@@ -14,12 +16,20 @@ axes = let convert = map pointToVect >> pcaEigenpairs >> sortBy snd >> reverse >
            takeOne xs = case xs of
                           [] -> []
                           (b::bs) -> [b]
-       in lift convert points |> lift takeOne
+       in points |> lift convert
+                 |> lift takeOne
 
 pointsMean : Signal Point
 pointsMean = let f pts = case map pointToVect pts of
                            [] -> (0, 0)
                            (p::ps) -> NonEmpty p ps |> mean |> vectToPoint
              in lift f points
+
+state : Signal State
+state = foldp update initialState actions
+
+points : Signal [Point]
+points = let f st = st.points |> D.toList |> map snd
+         in lift f state
 
 main = display <~ Window.dimensions ~ points ~ axes ~ pointsMean
