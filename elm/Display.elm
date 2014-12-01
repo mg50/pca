@@ -30,7 +30,11 @@ drawEigenArrows (mx,my) pts =
   let drawOne (x,y) = let seg = segment (mx,my) (mx+100*x, my+100*y) |> traced (solid red)
                           dot = circle 5 |> filled red |> move (mx,my)
                       in [seg, dot]
-  in concat <| map drawOne pts
+  in pts |> map adjustQuadrant |> map drawOne |> concat
 
 toDot : Point -> Form
 toDot (x,y) = circle 5 |> filled black |> move (x,y)
+
+adjustQuadrant : Point -> Point
+adjustQuadrant (x,y) =
+  if x < 0 then  (-x,-y) else (x,y)
