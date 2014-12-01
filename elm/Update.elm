@@ -10,6 +10,7 @@ update action state =
     Mouseup point -> handleMouseup point state
     Mousedown point -> handleMousedown point state
     Mousemove point -> handleMousemove point state
+    ToggleProjections -> toggleProjections state
 
 handleMousedown point state =
   { state | draggingId <- findPoint point state.points }
@@ -27,3 +28,6 @@ handleMouseup point state =
                in { state | points <- D.insert id point state.points
                           , freshId <- id+1
                   }
+
+toggleProjections state =
+  { state | projectionsVisible <- not state.projectionsVisible }

@@ -1,11 +1,14 @@
 module Display (display) where
 import LinearAlgebra (pcaEigenpairs)
 import Array as A
+import Dict as D
 import Model (..)
 import Util (pointToVect, vectToPoint)
 
-display (w,h) points eigenvectors mean =
-  let w' = toFloat w
+display : (Int,Int) -> State -> [Point] -> Point -> Element
+display (w,h) state eigenvectors mean =
+  let points = state.points |> D.toList |> map snd
+      w' = toFloat w
       h' = toFloat h
       styleAxis = traced (solid black)
       xAxis = styleAxis <| segment (-w'/2, 0) (w'/2, 0)
@@ -13,11 +16,13 @@ display (w,h) points eigenvectors mean =
       dots = map toDot points
       pointToVect (x,y) = A.fromList [x, y]
       eigenArrows = drawEigenArrows mean eigenvectors
-      projectedPoints = (project mean) eigenvectors points
+      projectedPoints = if state.projectionsVisible
+                        then project eigenvectors points
+                        else []
   in collage w h <| (xAxis::yAxis::dots) ++ eigenArrows ++ projectedPoints
 
-project : Point -> [Point] -> [Point] -> [Form]
-project (mx,my) es pts =
+project : [Point] -> [Point] -> [Form]
+project es pts =
   case es of
     [] -> []
     (e::_) -> let proj (ex,ey) (x,y) = let n = ex*x + ey*y

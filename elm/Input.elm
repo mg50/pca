@@ -2,9 +2,13 @@ module Input (actions) where
 import Model (..)
 import Mouse
 import Window
+import Keyboard as K
 
 actions : Signal Action
-actions = merges [mouseUp, mouseDown, mouseMove]
+actions = merges [mouseUp, mouseDown, mouseMove, toggleProjections]
+
+toggleProjections : Signal Action
+toggleProjections = sampleOn K.space (constant ToggleProjections)
 
 mouseUp = let down = keepIf not False Mouse.isDown
           in Mouseup <~ sampleOn down currentPoint

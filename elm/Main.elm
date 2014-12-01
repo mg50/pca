@@ -32,4 +32,8 @@ points : Signal [Point]
 points = let f st = st.points |> D.toList |> map snd
          in lift f state
 
-main = display <~ Window.dimensions ~ points ~ axes ~ pointsMean
+--main : Signal Element
+main = display <~ Window.dimensions
+                ~ state
+                ~ axes
+                ~ pointsMean
