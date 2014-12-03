@@ -8,7 +8,7 @@ actions : Signal Action
 actions = merges [mouseUp, mouseDown, mouseMove, toggleProjections]
 
 toggleProjections : Signal Action
-toggleProjections = sampleOn K.space (constant ToggleProjections)
+toggleProjections =  lift (always ToggleProjections) <| keepIf identity False K.space
 
 mouseUp = let down = keepIf not False Mouse.isDown
           in Mouseup <~ sampleOn down currentPoint
